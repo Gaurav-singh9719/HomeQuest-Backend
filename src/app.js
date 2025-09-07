@@ -15,7 +15,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",             
-  // "https://rentlisting.netlify.app"   
+  "https://homerenatal.netlify.app/"   
 ];
 
 app.use(cors({
