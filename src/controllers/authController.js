@@ -6,10 +6,10 @@ const jwt = require('jsonwebtoken');
 exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email }).lean().select('email');  // 🚀 OPTIMIZED
     if (user) return res.status(400).json({ message: 'User already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 8);  // 🚀 FASTER (10→8)
     user = new User({ name, email, password: hashedPassword, role });
     await user.save();
 
@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).lean().select('password role _id name email');  // 🚀 OPTIMIZED
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
     const isMatch = await bcrypt.compare(password, user.password);
