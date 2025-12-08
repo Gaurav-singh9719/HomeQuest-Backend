@@ -9,7 +9,13 @@ cloudinary.config({
 const uploadToCloudinary = async (buffer) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { resource_type: 'image' },
+      { 
+        resource_type: 'image',
+        quality: 'auto',        
+        fetch_format: 'auto',   
+        width: 800,
+        crop: 'limit'           
+      },
       (error, result) => {
         if (error) reject(error);
         else resolve(result.secure_url);
