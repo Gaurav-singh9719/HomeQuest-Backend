@@ -6,7 +6,12 @@ const propertySchema = new mongoose.Schema({
   address: { type: String, required: true },
   price: { type: Number, required: true },
   images: [String],
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  owner: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true,
+    index: true  
+  },
   requests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Request' }]
 }, { timestamps: true });
 
