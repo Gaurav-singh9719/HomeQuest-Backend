@@ -19,20 +19,19 @@ const createProperty = async (req, res) => {
     if (Number.isNaN(numericPrice) || numericPrice <= 0) {
       return res.status(400).json({ message: 'price must be a positive number' });
     }
-
     let images = [];
     if (req.files && req.files.length > 0) {
-      const uploads = req.files.map((file) => uploadToCloudinary(file.buffer));
-      images = await Promise.all(uploads);
+      const uploadPromises = req.files.slice(0, 2).map(file => 
+        uploadToCloudinary(file.buffer).catch(err => null)
+      );
+      const results = await Promise.allSettled(uploadPromises);
+      images = results
+        .filter(result => result.status === 'fulfilled')
+        .map(result => result.value);
     }
 
     const property = await Property.create({
-      title,
-      description,
-      address,
-      price: numericPrice,
-      images,
-      owner: req.user._id
+      title, description, address, price: numericPrice, images, owner: req.user._id
     });
 
     return res.status(201).json({ message: 'Property created successfully', property });
@@ -41,6 +40,7 @@ const createProperty = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 
 const deleteProperty = async (req, res) => {
