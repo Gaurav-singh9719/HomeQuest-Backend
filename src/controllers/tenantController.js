@@ -24,7 +24,12 @@ exports.applyForProperty = async (req, res) => {
   try {
     const { propertyId } = req.body;
 
-    const property = await Property.findById(propertyId);
+    // ❌ VALIDATION ADD
+    if (!propertyId || !req.user?._id) {
+      return res.status(400).json({ message: 'Property ID and user required' });
+    }
+
+    const property = await Property.findById(propertyId).lean();
     if (!property) return res.status(404).json({ message: 'Property not found' });
 
     // Prevent tenant from applying to own property
@@ -48,15 +53,18 @@ exports.applyForProperty = async (req, res) => {
 
     await request.save();
 
-    property.requests.push(request._id);
-    await property.save();
+    // Update property requests array
+    await Property.findByIdAndUpdate(propertyId, {
+      $push: { requests: request._id }
+    });
 
     res.status(201).json({ message: 'Applied successfully', request });
   } catch (err) {
-    console.error('applyForProperty error:', err);
+    console.error('applyForProperty error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // 🟢 Get tenant's applications with status
 exports.getTenantApplications = async (req, res) => {
