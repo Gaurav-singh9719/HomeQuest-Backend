@@ -1,19 +1,28 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.EMAIL_HOST,
+  port: Number(process.env.EMAIL_PORT),
+  secure: process.env.EMAIL_SECURE === "true", // Gmail requires secure=true for 465
   auth: {
-    user: process.env.EMAIL_USER, // ✅ Gmail
-    pass: process.env.EMAIL_PASS, // ✅ App password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
-const sendEmail = async ({ name, email, message }) => {
+const sendEmail = async ({ name, email, phone, subject, message }) => {
   const mailOptions = {
-    from: email, // sender
-    to: process.env.EMAIL_USER, // where you’ll receive it
-    subject: `New Contact Form Submission from ${name}`,
-    text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+    from: `"HomeQuest Contact" <${process.env.EMAIL_USER}>`, // Must be your gmail
+    to: process.env.ADMIN_EMAIL, // Your email
+    subject: `New Contact Form: ${subject || "General Inquiry"}`,
+    html: `
+      <h2>New Contact</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone || "N/A"}</p>
+      <p><strong>Message:</strong></p>
+      <p>${message}</p>
+    `
   };
 
   return transporter.sendMail(mailOptions);
