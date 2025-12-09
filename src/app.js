@@ -3,6 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+// 🔥 MODELS CONNECT (सभी एक साथ ऊपर)
+require('./models/User');
+require('./models/Property');
+require('./models/Request');
+require('./models/Contact');  // ✅ Contact model connected
+
 const authRoutes = require('./routes/authRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
 const ownerRoutes = require('./routes/ownerRoutes');
@@ -12,7 +18,6 @@ const contactRoutes = require("./routes/contactRoutes");
 const app = express();
 
 // 🔥 Allowed origins set karo
-
 const allowedOrigins = [
   "http://localhost:3000",             
   "https://homerenatal.netlify.app"   
@@ -30,7 +35,6 @@ app.use(cors({
   credentials: true
 }));
 
-
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -39,12 +43,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/owner', ownerRoutes);
 app.use('/api/tenant', tenantRoutes);
-app.use("/api/contact", contactRoutes);
+app.use("/api/contact", contactRoutes);  // ✅ Perfect route
 
 // MongoDB connect
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
+mongoose.connect(process.env.MONGO_URI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true 
+})
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("🚨 MongoDB error:", err));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
