@@ -2,14 +2,14 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Register
+
 exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
-    let user = await User.findOne({ email }).lean().select('email');  // 🚀 OPTIMIZED
+    let user = await User.findOne({ email }).lean().select('email');  
     if (user) return res.status(400).json({ message: 'User already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, 8);  // 🚀 FASTER (10→8)
+    const hashedPassword = await bcrypt.hash(password, 8); 
     user = new User({ name, email, password: hashedPassword, role });
     await user.save();
 
@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email }).lean().select('password role _id name email');  // 🚀 OPTIMIZED
+    const user = await User.findOne({ email }).lean().select('password role _id name email');  
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
     const isMatch = await bcrypt.compare(password, user.password);
