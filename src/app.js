@@ -3,11 +3,11 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// 🔥 MODELS CONNECT (सभी एक साथ ऊपर)
+
 require('./models/User');
 require('./models/Property');
 require('./models/Request');
-require('./models/Contact');  // ✅ Contact model connected
+require('./models/Contact');  
 
 const authRoutes = require('./routes/authRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
@@ -17,7 +17,6 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
-// 🔥 Allowed origins set karo
 const allowedOrigins = [
   "http://localhost:3000",             
   "https://homerenatal.netlify.app"   
@@ -43,9 +42,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/owner', ownerRoutes);
 app.use('/api/tenant', tenantRoutes);
-app.use("/api/contact", contactRoutes);  // ✅ Perfect route
+app.use("/api/contact", contactRoutes);  
 
-// MongoDB connect
 mongoose.connect(process.env.MONGO_URI, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true 
